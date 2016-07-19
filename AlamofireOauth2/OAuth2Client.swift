@@ -1,6 +1,5 @@
 
 import Foundation
-import UIKit
 import Alamofire
 import KeychainAccess
 
@@ -15,7 +14,7 @@ class OAuth2Client : NSObject {
     var sourceViewController:UIViewController?
     let keychain:  Keychain
     
-    init(outh2Settings: Oauth2Settings) {
+    required init(outh2Settings: Oauth2Settings) {
         self.oauth2Settings = outh2Settings
         self.keychain = Keychain(service: outh2Settings.baseURL)
     }
@@ -47,7 +46,7 @@ class OAuth2Client : NSObject {
         }
         
         // First, let's retrieve the autorization_code by login the user in.
-        self.retrieveAuthorizationCode ({ (authorizationCode) -> Void in
+        self.retrieveAuthorizationCode ({ (authorizationCode, error) -> Void in
             if let optionalAuthCode = authorizationCode {
                 // We have the authorization_code, we now need to exchange it for the accessToken by doind a POST request
                 let url:String = self.oauth2Settings.tokenURL
@@ -80,6 +79,9 @@ class OAuth2Client : NSObject {
 //                }
             }
             else {
+                if let error = error {
+                    print("ERROR: \(error.localizedDescription)")
+                }
                 token(accessToken: nil)
             }
         })
@@ -87,36 +89,32 @@ class OAuth2Client : NSObject {
     
     // MARK: - Private helper methods
     
-    var activeController: UIViewController {
+    weak var dactiveController: UIViewController? {
         get {
             if self.sourceViewController == nil {
-                self.sourceViewController = UIApplication.topViewController()
+                print("WARNING: You should have an active UIViewController! ")
             }
-            if self.sourceViewController != nil {
-                return self.sourceViewController!
-            }
-            print("WARNING: You should have an active UIViewController! ")
-            return UIViewController()
+            return sourceViewController
         }
     }
 
     // Retrieves the autorization code by presenting a webView that will let the user login
-    private func retrieveAuthorizationCode(authoCode:((authorizationCode:String?) -> Void)) -> Void{
+    internal func retrieveAuthorizationCode(authoCode:((authorizationCode:String?, error: NSError?) -> Void)) -> Void {
         
-        func success(code:String) -> Void {
-            activeController.dismissViewControllerAnimated(true, completion: nil)
-            authoCode(authorizationCode:code)
-        }
+        authoCode(
+            authorizationCode: nil,
+            error: NSError(
+                domain: "OAuth2Client",
+                code: 401,
+                userInfo: [
+                    NSLocalizedDescriptionKey: NSLocalizedString(
+                        "Unable to fetch authrorization code",
+                        comment: "retrieveAuthorizationCode unable to fetch code error description"
+                    )
+                ]
+            )
+        )
         
-        func failure(error:NSError) -> Void {
-            activeController.dismissViewControllerAnimated(true, completion: nil)
-            authoCode(authorizationCode:nil)
-        }
-        
-        let authenticationViewController:AuthenticationViewController = AuthenticationViewController(oauth2Settings: oauth2Settings, successCallback:success, failureCallback:failure)
-        let navigationController:UINavigationController = UINavigationController(rootViewController: authenticationViewController)
-        
-        activeController.presentViewController(navigationController, animated:true, completion:nil)
     }
     
     
@@ -224,27 +222,3 @@ class OAuth2Client : NSObject {
 
 }
 
-extension UIApplication {
-    class func topViewController(base: UIViewController? = UIApplication.sharedApplication().keyWindow?.rootViewController) -> UIViewController? {
-        
-        if let nav = base as? UINavigationController {
-            return topViewController(nav.visibleViewController)
-        }
-        
-        if let tab = base as? UITabBarController {
-            let moreNavigationController = tab.moreNavigationController
-            
-            if let top = moreNavigationController.topViewController where top.view.window != nil {
-                return topViewController(top)
-            } else if let selected = tab.selectedViewController {
-                return topViewController(selected)
-            }
-        }
-        
-        if let presented = base?.presentedViewController {
-            return topViewController(presented)
-        }
-        
-        return base
-    }
-}

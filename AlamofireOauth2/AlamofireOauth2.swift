@@ -9,8 +9,7 @@ public func UsingOauth2(settings: Oauth2Settings?, performWithToken: (token: Str
         errorHandler()
         return
     }
-    let client = OAuth2Client(outh2Settings: settings!)
-    client.retrieveAuthToken({ (authToken) -> Void in
+    settings?.client().retrieveAuthToken({ (authToken) -> Void in
         if let optionnalAuthToken = authToken {
             if authToken != "" {
                 print("Received access token " + optionnalAuthToken)
