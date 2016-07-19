@@ -3,4 +3,8 @@
 Pods/
 *.xcuserstate
 AlamofireOauth2.xcworkspace/xcuserdata*
+AlamofireOauth2.xcodeproj/xcuserdata*
+
+#vim
+.*.swp
 
