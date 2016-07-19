@@ -73,7 +73,6 @@ s.source_files  = 'AlamofireOauth2/*'
 #
 
 s.frameworks = "Foundation", "UIKit"
-#s.frameworks = "Foundation", "UIKit", "CloudKit"
 
 # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
 #
@@ -85,24 +84,5 @@ s.requires_arc = true
 
 s.dependency "Alamofire"
 s.dependency "KeychainAccess"
-#s.dependency "AlamofireOauth2Core"
-
-#s.subspec 'Core' do |ss|
-#    ss.platform = :ios, "8.0"
-#    ss.dependency "Alamofire"
-#    ss.dependency "KeychainAccess"
-#    ss.frameworks = "Foundation"
-#    ss.source_files = 'AlamofireOauth2/{AlamofireOauth2,AuthenticationViewController,OAuth2Client,Oauth2Settings}.swift'
-#end
-#
-#s.subspec 'ApplicationSupport' do |ss|
-#    ss.platform = :ios, "8.0"
-#    ss.dependency "Alamofire"
-#    ss.dependency "KeychainAccess"
-#    ss.dependency "AlamofireOauth2/Core"
-#    ss.frameworks = "Foundation", "UIKit"
-#    ss.source_files = 'AlamofireOauth2/OAuth2ApplicationClient.swift'
-#end
-
 
 end
