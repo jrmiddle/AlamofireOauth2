@@ -87,17 +87,6 @@ class OAuth2Client : NSObject {
         })
     }
     
-    // MARK: - Private helper methods
-    
-    weak var dactiveController: UIViewController? {
-        get {
-            if self.sourceViewController == nil {
-                print("WARNING: You should have an active UIViewController! ")
-            }
-            return sourceViewController
-        }
-    }
-
     // Retrieves the autorization code by presenting a webView that will let the user login
     internal func retrieveAuthorizationCode(authoCode:((authorizationCode:String?, error: NSError?) -> Void)) -> Void {
         
