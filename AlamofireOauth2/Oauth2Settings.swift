@@ -30,19 +30,32 @@ public class Oauth2Settings {
     
     var clientClass: OAuth2Client.Type {
         
-        if let clientClass = NSClassFromString("AlamofireOAuth2.OAuth2ApplicationClient") as? OAuth2Client.Type {
-            print("Using oauth2AppCient)")
-            return clientClass
+        guard let bundleName = NSBundle.mainBundle().infoDictionary?["CFBundleName"] as? String else {
+            return OAuth2Client.self
         }
         
-        let className = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String + ".OAuth2ApplicationClient"
-        if let clientClass = NSClassFromString(className) as? OAuth2Client.Type {
-            print("Using \(className)")
-            return clientClass
+        let moduleName = "AlamofireOauth2"
+        let clientName = "OAuth2ApplicationClient"
+        
+        if let clientClass = NSClassFromString(moduleName + "." + clientName) {
+            if clientClass is OAuth2Client.Type {
+                return clientClass as! OAuth2Client.Type
+            }
         }
         
+        if let clientClass = NSClassFromString(bundleName + "." + clientName) {
+            if clientClass is OAuth2Client.Type {
+                return clientClass as! OAuth2Client.Type
+            }
+        }
+        
+//        if let clientClass = NSClassFromString(clientName) {
+//            if clientClass is OAuth2Client.Type {
+//                return clientClass as! OAuth2Client.Type
+//            }
+//        }
+//        
         return OAuth2Client.self
-
     }
     
 }
